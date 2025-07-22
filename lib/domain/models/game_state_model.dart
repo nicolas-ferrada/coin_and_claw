@@ -1,7 +1,7 @@
 import 'package:coin_and_claw/core/constants.dart';
 import 'package:equatable/equatable.dart';
 
-class GameState extends Equatable {
+class GameStateModel extends Equatable {
   final int coins; // Current coin count
   final double bonusProbability; // [0..1] chance per tap
   final Duration? autoTapInterval; // Null until ExtraLove bought
@@ -10,7 +10,7 @@ class GameState extends Equatable {
   final bool isHouseBought; // Victory flag
   final DateTime startTime; // Session start
 
-  const GameState({
+  const GameStateModel({
     required this.coins,
     required this.bonusProbability,
     this.autoTapInterval,
@@ -20,7 +20,7 @@ class GameState extends Equatable {
     required this.startTime,
   });
 
-  factory GameState.initial() => GameState(
+  factory GameStateModel.initial() => GameStateModel(
     coins: 0,
     bonusProbability: GameBalanceConstants.bonusProbabilityInitial,
     autoTapInterval: null,
@@ -30,7 +30,7 @@ class GameState extends Equatable {
     startTime: DateTime.now(),
   );
 
-  GameState copyWith({
+  GameStateModel copyWith({
     int? coins,
     double? bonusProbability,
     Duration? autoTapInterval,
@@ -39,7 +39,7 @@ class GameState extends Equatable {
     bool? isHouseBought,
     DateTime? startTime,
   }) {
-    return GameState(
+    return GameStateModel(
       coins: coins ?? this.coins,
       bonusProbability: bonusProbability ?? this.bonusProbability,
       autoTapInterval: autoTapInterval,
