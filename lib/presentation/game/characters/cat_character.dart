@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:coin_and_claw/core/constants.dart';
+import 'package:coin_and_claw/presentation/bloc/game_bloc/game_bloc.dart';
 import 'package:coin_and_claw/presentation/game/my_game.dart';
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 
 enum CatCharacterState { idle, excited, laydown, surprised }
 
 class CatCharacter extends SpriteAnimationGroupComponent
-    with HasGameReference<MyGame> {
+    with HasGameReference<MyGame>, TapCallbacks {
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation excitedAnimation;
   late final SpriteAnimation laydownAnimation;
@@ -66,5 +68,12 @@ class CatCharacter extends SpriteAnimationGroupComponent
     };
 
     current = currentAnimation;
+  }
+
+  @override
+  bool onTapDown(TapDownEvent event) {
+    // send a TapEvent into the bloc
+    game.gameBloc.add(TapEvent());
+    return true;
   }
 }
