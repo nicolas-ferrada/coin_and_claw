@@ -6,6 +6,7 @@ import 'package:coin_and_claw/domain/models/update_type_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coin_and_claw/core/constants.dart';
+import 'package:vibration/vibration.dart';
 
 part 'game_event.dart';
 part 'game_state.dart';
@@ -37,7 +38,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   /// Handles both manual tap ([TapEvent]) and auto‐tap ([AutoTapEvent]).
   /// Rolls RNG against [bonusProbability], awards coins, and emits new state.
-  void _onTap(GameEvent event, Emitter<GameState> emit) {
+  void _onTap(GameEvent event, Emitter<GameState> emit) async {
     if (state is! GameSuccess) return;
     final stateModel = (state as GameSuccess).gameStateModel;
 
@@ -47,7 +48,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // Maybe trigger a lucky bonus
     if (Random().nextDouble() < stateModel.bonusProbability) {
       newCoins += GameBalanceConstants.bonusRewardAmount;
-      // TODO: trigger vibration / SFX here
+      if (await Vibration.hasVibrator()) {
+        Vibration.vibrate();
+      }
     }
 
     emit(GameSuccess(stateModel.copyWith(coins: newCoins)));
