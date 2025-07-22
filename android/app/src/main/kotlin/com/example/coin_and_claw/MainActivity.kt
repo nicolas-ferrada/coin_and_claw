@@ -1,4 +1,4 @@
-package com.example.coin_and_claw
+package com.nicolasferrada.coin_and_claw
 
 import io.flutter.embedding.android.FlutterActivity
 
