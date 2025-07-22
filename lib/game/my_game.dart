@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coin_and_claw/game/characters/cat_character.dart';
 import 'package:coin_and_claw/game/levels/background_room.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -7,6 +8,9 @@ import 'package:flutter/material.dart';
 
 class MyGame extends FlameGame {
   final BackgroundRoom roomBackground = BackgroundRoom();
+  final CatCharacter catCharacter = CatCharacter(
+    currentAnimation: CatCharacterState.idle,
+  );
 
   @override
   Color backgroundColor() => Color(0xff181425);
@@ -22,7 +26,7 @@ class MyGame extends FlameGame {
     );
     camera.viewfinder.anchor = Anchor.topLeft;
 
-    addAll([camera, roomBackground]);
+    addAll([camera, roomBackground, catCharacter]);
 
     return super.onLoad();
   }
