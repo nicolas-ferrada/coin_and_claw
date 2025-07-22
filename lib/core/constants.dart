@@ -1,5 +1,5 @@
 /// === Coins & bonus ===
-class GameBalance {
+class GameBalanceConstants {
   static const double bonusProbabilityInitial = 0.01; // 1%
   static const int bonusRewardAmount = 10;
 
@@ -20,7 +20,7 @@ class GameBalance {
 }
 
 /// Helper class to manage sprite asset paths
-class SpriteAssetsRoutes {
+class SpriteAssetsRoutesConstants {
   /// === Cat sprites ===
   static const String catIdle = 'cat/cat-idle.png';
   static const String catExcited = 'cat/cat-excited.png';

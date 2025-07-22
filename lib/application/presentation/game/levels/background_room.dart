@@ -4,7 +4,9 @@ import 'package:flame/components.dart';
 class BackgroundRoom extends World {
   @override
   Future<void> onLoad() async {
-    final sprite = await Sprite.load(SpriteAssetsRoutes.roomBackground);
+    final sprite = await Sprite.load(
+      SpriteAssetsRoutesConstants.roomBackground,
+    );
 
     add(SpriteComponent(sprite: sprite));
 

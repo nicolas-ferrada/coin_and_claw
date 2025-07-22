@@ -26,7 +26,7 @@ class CatCharacter extends SpriteAnimationGroupComponent
 
   void _loadAllAnimations() {
     idleAnimation = SpriteAnimation.fromFrameData(
-      game.images.fromCache(SpriteAssetsRoutes.catIdle),
+      game.images.fromCache(SpriteAssetsRoutesConstants.catIdle),
       SpriteAnimationData.sequenced(
         amount: 10,
         stepTime: stepTime,
@@ -34,7 +34,7 @@ class CatCharacter extends SpriteAnimationGroupComponent
       ),
     );
     excitedAnimation = SpriteAnimation.fromFrameData(
-      game.images.fromCache(SpriteAssetsRoutes.catExcited),
+      game.images.fromCache(SpriteAssetsRoutesConstants.catExcited),
       SpriteAnimationData.sequenced(
         amount: 12,
         stepTime: stepTime,
@@ -42,7 +42,7 @@ class CatCharacter extends SpriteAnimationGroupComponent
       ),
     );
     laydownAnimation = SpriteAnimation.fromFrameData(
-      game.images.fromCache(SpriteAssetsRoutes.catLaydown),
+      game.images.fromCache(SpriteAssetsRoutesConstants.catLaydown),
       SpriteAnimationData.sequenced(
         amount: 12,
         stepTime: stepTime,
@@ -50,7 +50,7 @@ class CatCharacter extends SpriteAnimationGroupComponent
       ),
     );
     surprisedAnimation = SpriteAnimation.fromFrameData(
-      game.images.fromCache(SpriteAssetsRoutes.catSurprised),
+      game.images.fromCache(SpriteAssetsRoutesConstants.catSurprised),
       SpriteAnimationData.sequenced(
         amount: 12,
         stepTime: stepTime,
