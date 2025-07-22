@@ -12,7 +12,9 @@ class MyGame extends FlameGame {
   Color backgroundColor() => Color(0xff181425);
 
   @override
-  FutureOr<void> onLoad() {
+  FutureOr<void> onLoad() async {
+    await images.loadAllImages();
+
     camera = CameraComponent.withFixedResolution(
       width: 180,
       height: 320,
