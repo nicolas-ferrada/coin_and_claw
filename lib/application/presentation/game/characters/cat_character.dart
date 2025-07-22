@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:coin_and_claw/core/constants.dart';
-import 'package:coin_and_claw/game/my_game.dart';
+import 'package:coin_and_claw/application/presentation/game/my_game.dart';
 import 'package:flame/components.dart';
 
 enum CatCharacterState { idle, excited, laydown, surprised }

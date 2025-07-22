@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:coin_and_claw/game/characters/cat_character.dart';
-import 'package:coin_and_claw/game/levels/background_room.dart';
+import 'package:coin_and_claw/application/presentation/game/characters/cat_character.dart';
+import 'package:coin_and_claw/application/presentation/game/levels/background_room.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
