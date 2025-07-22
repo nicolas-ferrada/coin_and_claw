@@ -15,16 +15,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Timer? _autoTapTimer;
   Timer? _frenzyTimer;
 
-  /// Creates the bloc and immediately dispatches [LoadGameEvent].
   GameBloc() : super(const GameInitial()) {
     on<LoadGameEvent>(_onLoad);
     on<TapEvent>(_onTap);
     on<AutoTapEvent>(_onTap);
     on<PurchaseUpgradeEvent>(_onPurchaseUpgrade);
     on<FrenzyExpiredEvent>(_onFrenzyExpired);
-
-    // Start with loading initial game data
-    add(LoadGameEvent());
   }
 
   /// Loads initial game data (e.g. defaults or persisted prefs).
