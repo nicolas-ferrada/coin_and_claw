@@ -13,7 +13,7 @@ class MyGame extends FlameGame {
   );
 
   @override
-  Color backgroundColor() => Color(0xff181425);
+  Color backgroundColor() => const Color(0xff181425);
 
   @override
   FutureOr<void> onLoad() async {
@@ -23,10 +23,19 @@ class MyGame extends FlameGame {
       width: 180,
       height: 320,
       world: roomBackground,
-    );
-    camera.viewfinder.anchor = Anchor.topLeft;
+    )..viewfinder.anchor = Anchor.topLeft;
 
-    addAll([camera, roomBackground, catCharacter]);
+    // Add the world + camera to the game root
+    addAll([roomBackground, camera]);
+
+    // Add the cat *into* the world so it’s rendered by the camera
+    await roomBackground.add(
+      catCharacter
+        ..priority = 1
+        ..anchor = Anchor.bottomCenter
+        ..position = Vector2(100, 275)
+        ..size = Vector2.all(64),
+    );
 
     return super.onLoad();
   }
