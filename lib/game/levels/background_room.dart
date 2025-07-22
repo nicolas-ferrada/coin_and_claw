@@ -6,12 +6,6 @@ class BackgroundRoom extends World {
   Future<void> onLoad() async {
     final sprite = await Sprite.load(SpriteAssetsRoutes.roomBackground);
 
-    add(
-      SpriteComponent(
-        sprite: sprite,
-        position: Vector2.zero(),
-        anchor: Anchor.topLeft,
-      ),
-    );
+    add(SpriteComponent(sprite: sprite));
   }
 }
