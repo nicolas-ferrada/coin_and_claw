@@ -42,9 +42,9 @@ class GameStateModel extends Equatable {
     return GameStateModel(
       coins: coins ?? this.coins,
       bonusProbability: bonusProbability ?? this.bonusProbability,
-      autoTapInterval: autoTapInterval,
+      autoTapInterval: autoTapInterval ?? this.autoTapInterval,
       isFrenzyActive: isFrenzyActive ?? this.isFrenzyActive,
-      frenzyEndsAt: frenzyEndsAt,
+      frenzyEndsAt: frenzyEndsAt ?? this.frenzyEndsAt,
       isHouseBought: isHouseBought ?? this.isHouseBought,
       startTime: startTime ?? this.startTime,
     );
