@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:coin_and_claw/game/levels/cat_room_level.dart';
+import 'package:coin_and_claw/game/levels/background_room.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 class MyGame extends FlameGame {
-  final RoomBackground roomBackground = RoomBackground();
+  final BackgroundRoom roomBackground = BackgroundRoom();
 
   @override
   Color backgroundColor() => Color(0xff181425);
@@ -14,8 +14,8 @@ class MyGame extends FlameGame {
   @override
   FutureOr<void> onLoad() {
     camera = CameraComponent.withFixedResolution(
-      width: 640, // 40 tiles × 16 px
-      height: 368, // 23 tiles × 16 px
+      width: 180,
+      height: 320,
       world: roomBackground,
     );
     camera.viewfinder.anchor = Anchor.topLeft;
