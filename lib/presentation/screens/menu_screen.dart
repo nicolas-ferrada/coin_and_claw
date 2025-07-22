@@ -1,4 +1,4 @@
-import 'package:coin_and_claw/application/presentation/game/my_game.dart';
+import 'package:coin_and_claw/presentation/game/my_game.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 

@@ -1,4 +1,4 @@
-import 'package:coin_and_claw/application/presentation/screens/menu_screen.dart';
+import 'package:coin_and_claw/presentation/screens/menu_screen.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 
