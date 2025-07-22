@@ -7,5 +7,7 @@ class BackgroundRoom extends World {
     final sprite = await Sprite.load(SpriteAssetsRoutes.roomBackground);
 
     add(SpriteComponent(sprite: sprite));
+
+    return super.onLoad();
   }
 }
