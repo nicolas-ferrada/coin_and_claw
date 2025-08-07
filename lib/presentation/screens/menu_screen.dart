@@ -12,7 +12,7 @@ class MenuScreen extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.of(context).push(
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (_) => GameWidget(game: MyGame())),
             );
           },
