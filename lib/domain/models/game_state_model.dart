@@ -4,9 +4,12 @@ import 'package:equatable/equatable.dart';
 enum InGameEffect {
   none,
   bonusHit,
-  frenzyStarted,
-  frenzyEnded,
-  upgradePurchased,
+  autoTap,
+  catnipFrenzyUpgradeBought,
+  catnipFrenzyExpired,
+  luckyBonusUpgradeBought,
+  extraLoveUpgradeBought,
+  houseBought,
 }
 
 class GameStateModel extends Equatable {
