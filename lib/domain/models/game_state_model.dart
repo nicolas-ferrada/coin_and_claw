@@ -1,6 +1,14 @@
 import 'package:coin_and_claw/core/constants.dart';
 import 'package:equatable/equatable.dart';
 
+enum InGameEffect {
+  none,
+  bonusHit,
+  frenzyStarted,
+  frenzyEnded,
+  upgradePurchased,
+}
+
 class GameStateModel extends Equatable {
   final int coins; // Current coin count
   final double bonusProbability; // [0..1] chance per tap
@@ -9,6 +17,7 @@ class GameStateModel extends Equatable {
   final DateTime? frenzyEndsAt; // When frenzy expires
   final bool isHouseBought; // Victory flag
   final DateTime startTime; // Session start
+  final InGameEffect inGameEffect; // Current effect state
 
   const GameStateModel({
     required this.coins,
@@ -18,6 +27,7 @@ class GameStateModel extends Equatable {
     this.frenzyEndsAt,
     this.isHouseBought = false,
     required this.startTime,
+    this.inGameEffect = InGameEffect.none,
   });
 
   factory GameStateModel.initial() => GameStateModel(
@@ -28,6 +38,7 @@ class GameStateModel extends Equatable {
     frenzyEndsAt: null,
     isHouseBought: false,
     startTime: DateTime.now(),
+    inGameEffect: InGameEffect.none,
   );
 
   GameStateModel copyWith({
@@ -38,6 +49,7 @@ class GameStateModel extends Equatable {
     DateTime? frenzyEndsAt,
     bool? isHouseBought,
     DateTime? startTime,
+    InGameEffect? inGameEffect,
   }) {
     return GameStateModel(
       coins: coins ?? this.coins,
@@ -47,6 +59,7 @@ class GameStateModel extends Equatable {
       frenzyEndsAt: frenzyEndsAt ?? this.frenzyEndsAt,
       isHouseBought: isHouseBought ?? this.isHouseBought,
       startTime: startTime ?? this.startTime,
+      inGameEffect: inGameEffect ?? this.inGameEffect,
     );
   }
 
@@ -59,5 +72,6 @@ class GameStateModel extends Equatable {
     frenzyEndsAt,
     isHouseBought,
     startTime,
+    inGameEffect,
   ];
 }
