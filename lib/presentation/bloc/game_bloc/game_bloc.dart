@@ -6,7 +6,6 @@ import 'package:coin_and_claw/domain/models/update_type_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coin_and_claw/core/constants.dart';
-import 'package:vibration/vibration.dart';
 
 part 'game_event.dart';
 part 'game_state.dart';
@@ -22,6 +21,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<AutoTapEvent>(_onTap);
     on<PurchaseUpgradeEvent>(_onPurchaseUpgrade);
     on<FrenzyExpiredEvent>(_onFrenzyExpired);
+    on<ClearEffectEvent>(_onClearEffect);
   }
 
   /// Loads initial game data (e.g. defaults or persisted prefs).
@@ -45,15 +45,19 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // Grant one coin per tap
     var newCoins = stateModel.coins + 1;
 
+    // Effect to apply. Default is none, unless it's an auto‐tap.
+    var effect =
+        (event is AutoTapEvent) ? InGameEffect.autoTap : InGameEffect.none;
+
     // Maybe trigger a lucky bonus
     if (Random().nextDouble() < stateModel.bonusProbability) {
       newCoins += GameBalanceConstants.bonusRewardAmount;
-      if (await Vibration.hasVibrator()) {
-        Vibration.vibrate();
-      }
+      effect = InGameEffect.bonusHit;
     }
 
-    emit(GameSuccess(stateModel.copyWith(coins: newCoins)));
+    emit(
+      GameSuccess(stateModel.copyWith(coins: newCoins, inGameEffect: effect)),
+    );
   }
 
   /// Processes a shop purchase request:
@@ -71,9 +75,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (state is! GameSuccess) return;
     final stateModel = (state as GameSuccess).gameStateModel;
 
+    // Effect to apply. None by default.
+    var effect = InGameEffect.none;
+
     switch (event.type) {
       case UpgradeType.luckyBonus:
         if (stateModel.coins < GameBalanceConstants.costLuckyBonus) return;
+        effect = InGameEffect.luckyBonusUpgradeBought;
         emit(
           GameSuccess(
             stateModel.copyWith(
@@ -81,6 +89,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
               bonusProbability:
                   stateModel.bonusProbability *
                   GameBalanceConstants.bonusProbabilityMultiplier,
+              inGameEffect: effect,
             ),
           ),
         );
@@ -88,6 +97,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       case UpgradeType.extraLove:
         if (stateModel.coins < GameBalanceConstants.costExtraLove) return;
+        effect = InGameEffect.extraLoveUpgradeBought;
         _autoTapTimer?.cancel();
         final interval = Duration(
           seconds: GameBalanceConstants.autoTapIntervalSeconds,
@@ -98,6 +108,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             stateModel.copyWith(
               coins: stateModel.coins - GameBalanceConstants.costExtraLove,
               autoTapInterval: interval,
+              inGameEffect: effect,
             ),
           ),
         );
@@ -105,6 +116,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       case UpgradeType.catnipFrenzy:
         if (stateModel.coins < GameBalanceConstants.costCatnipFrenzy) return;
+        effect = InGameEffect.catnipFrenzyUpgradeBought;
         _frenzyTimer?.cancel();
         final endsAt = DateTime.now().add(
           Duration(seconds: GameBalanceConstants.frenzyDurationSeconds),
@@ -119,6 +131,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
               coins: stateModel.coins - GameBalanceConstants.costCatnipFrenzy,
               isFrenzyActive: true,
               frenzyEndsAt: endsAt,
+              inGameEffect: effect,
             ),
           ),
         );
@@ -126,11 +139,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       case UpgradeType.house:
         if (stateModel.coins < GameBalanceConstants.costHouse) return;
+        effect = InGameEffect.houseBought;
         emit(
           GameSuccess(
             stateModel.copyWith(
               coins: stateModel.coins - GameBalanceConstants.costHouse,
               isHouseBought: true,
+              inGameEffect: effect,
             ),
           ),
         );
@@ -143,11 +158,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   void _onFrenzyExpired(FrenzyExpiredEvent event, Emitter<GameState> emit) {
     if (state is! GameSuccess) return;
     final stateModel = (state as GameSuccess).gameStateModel;
+    _frenzyTimer?.cancel();
     emit(
       GameSuccess(
-        stateModel.copyWith(isFrenzyActive: false, frenzyEndsAt: null),
+        stateModel.copyWith(
+          isFrenzyActive: false,
+          frenzyEndsAt: null,
+          inGameEffect: InGameEffect.catnipFrenzyExpired,
+        ),
       ),
     );
+  }
+
+  /// Clears the current in-game effect, resetting the state.
+  void _onClearEffect(ClearEffectEvent _, Emitter<GameState> emit) {
+    if (state is GameSuccess) {
+      final m = (state as GameSuccess).gameStateModel;
+      emit(GameSuccess(m.copyWith(inGameEffect: InGameEffect.none)));
+    }
   }
 
   /// Cleans up any active timers when the bloc is closed.
