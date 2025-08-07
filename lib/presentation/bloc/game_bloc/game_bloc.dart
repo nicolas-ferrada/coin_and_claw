@@ -38,25 +38,45 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   /// Handles both manual tap ([TapEvent]) and auto‐tap ([AutoTapEvent]).
   /// Rolls RNG against [bonusProbability], awards coins, and emits new state.
-  void _onTap(GameEvent event, Emitter<GameState> emit) async {
+  void _onTap(GameEvent event, Emitter<GameState> emit) {
+    // Early-out if the game isn’t in a playable state.
     if (state is! GameSuccess) return;
-    final stateModel = (state as GameSuccess).gameStateModel;
+    final gameState = (state as GameSuccess).gameStateModel;
 
-    // Grant one coin per tap
-    var newCoins = stateModel.coins + 1;
+    // Determine how many coins this tap is worth
+    final bool inFrenzy = gameState.isFrenzyActive;
 
-    // Effect to apply. Default is none, unless it's an auto‐tap.
-    var effect =
-        (event is AutoTapEvent) ? InGameEffect.autoTap : InGameEffect.none;
+    int multiplier =
+        inFrenzy ? GameBalanceConstants.catnipFrenzyBaseMultiplier : 1;
 
-    // Maybe trigger a lucky bonus
-    if (Random().nextDouble() < stateModel.bonusProbability) {
-      newCoins += GameBalanceConstants.bonusRewardAmount;
+    // Roll for a lucky bonus
+    final bool bonusHit = Random().nextDouble() < gameState.bonusProbability;
+
+    if (bonusHit) {
+      final int bonus =
+          GameBalanceConstants.bonusRewardAmount *
+          (inFrenzy ? GameBalanceConstants.catnipBonusMultiplier : 1);
+      multiplier += bonus;
+    }
+
+    // Work out which in-game effect (if any) should be emitted
+    InGameEffect effect;
+
+    if (event is AutoTapEvent) {
+      effect = InGameEffect.autoTap;
+    } else if (bonusHit) {
       effect = InGameEffect.bonusHit;
+    } else {
+      effect = InGameEffect.none;
     }
 
     emit(
-      GameSuccess(stateModel.copyWith(coins: newCoins, inGameEffect: effect)),
+      GameSuccess(
+        gameState.copyWith(
+          coins: gameState.coins + multiplier,
+          inGameEffect: effect,
+        ),
+      ),
     );
   }
 
@@ -66,7 +86,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   /// - Applies the specific upgrade effect:
   ///   • luckyBonus   → doubles the bonusProbability
   ///   • extraLove    → starts an auto‐tap timer
-  ///   • catnipFrenzy → activates a temporary frenzy window
+  ///   • catnipFrenzy → activates a temporary frenzy window that grants x2 base coins and x2 bonus coins
   ///   • house        → marks victory
   Future<void> _onPurchaseUpgrade(
     PurchaseUpgradeEvent event,
@@ -119,10 +139,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         effect = InGameEffect.catnipFrenzyUpgradeBought;
         _frenzyTimer?.cancel();
         final endsAt = DateTime.now().add(
-          Duration(seconds: GameBalanceConstants.frenzyDurationSeconds),
+          Duration(seconds: GameBalanceConstants.catnipFrenzyDuration),
         );
         _frenzyTimer = Timer(
-          Duration(seconds: GameBalanceConstants.frenzyDurationSeconds),
+          Duration(seconds: GameBalanceConstants.catnipFrenzyDuration),
           () => add(FrenzyExpiredEvent()),
         );
         emit(

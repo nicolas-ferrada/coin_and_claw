@@ -8,8 +8,10 @@ class GameBalanceConstants {
   static const int costLuckyBonus = 100;
 
   /// === CatnipFrenzy (active) ===
-  static const int costCatnipFrenzy = 250;
-  static const int frenzyDurationSeconds = 8;
+  static const int costCatnipFrenzy = 100;
+  static const int catnipFrenzyDuration = 8;
+  static const int catnipFrenzyBaseMultiplier = 2;
+  static const int catnipBonusMultiplier = 2;
 
   /// === ExtraLove (passive) ===
   static const int costExtraLove = 300;

@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:coin_and_claw/core/constants.dart';
 import 'package:coin_and_claw/domain/models/game_state_model.dart';
+import 'package:coin_and_claw/presentation/game/hud/shop.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame_bloc/flame_bloc.dart';
@@ -58,7 +60,7 @@ class MyGame extends FlameGame {
       ..size = Vector2.all(64);
     await background.add(player);
 
-    // 6) Initialize and add the coin counter UI
+    // Initialize and add the coin counter UI
     coinCounter = TextComponent(
       text: 'Coins: 0',
       position: Vector2(10, 25),
@@ -69,7 +71,10 @@ class MyGame extends FlameGame {
     );
     flameBlocProvider.add(coinCounter);
 
-    // 7) Listen for coin updates and refresh the UI
+    // Add the shop button to the camera viewport
+    cameraComponent.viewport.add(ShopButton());
+
+    // Listen for coin updates and refresh the UI
     flameBlocProvider.add(
       FlameBlocListener<GameBloc, GameState>(
         listenWhen: (_, state) => state is GameSuccess,
@@ -80,7 +85,7 @@ class MyGame extends FlameGame {
       ),
     );
 
-    // 8) Listen for in-game effects (e.g. bonusHit, frenzy, etc.)
+    // Listen for in-game effects (e.g. bonusHit, frenzy, etc.)
     flameBlocProvider.add(
       FlameBlocListener<GameBloc, GameState>(
         listenWhen: (prev, curr) {
@@ -109,7 +114,21 @@ class MyGame extends FlameGame {
                 }
               });
               break;
+            case InGameEffect.catnipFrenzyUpgradeBought:
+              // Show the excited animation
+              player.current = CatCharacterState.surprised;
 
+              // After 8s, return to idle (only if still surprised)
+              Future.delayed(
+                Duration(seconds: GameBalanceConstants.catnipFrenzyDuration),
+                () {
+                  if (!player.isRemoved &&
+                      player.current == CatCharacterState.surprised) {
+                    player.current = CatCharacterState.idle;
+                  }
+                },
+              );
+              break;
             default:
               break;
           }
