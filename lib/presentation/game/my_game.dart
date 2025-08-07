@@ -103,14 +103,16 @@ class MyGame extends FlameGame {
                 Vibration.vibrate();
               }
 
+              // If the player is currently surprised, do not change animation
+              if (player.current == CatCharacterState.surprised) break;
+
               // Show the excited animation
               player.current = CatCharacterState.excited;
 
               // After 5s, return to idle (only if still excited)
               Future.delayed(const Duration(seconds: 5), () {
                 if (!player.isRemoved &&
-                    player.current == CatCharacterState.excited &&
-                    player.current != CatCharacterState.surprised) {
+                    player.current == CatCharacterState.excited) {
                   player.current = CatCharacterState.idle;
                 }
               });
