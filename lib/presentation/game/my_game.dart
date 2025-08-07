@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coin_and_claw/domain/models/game_state_model.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame_bloc/flame_bloc.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:coin_and_claw/presentation/bloc/game_bloc/game_bloc.dart';
 import 'package:coin_and_claw/presentation/game/levels/background_room.dart';
 import 'package:coin_and_claw/presentation/game/characters/cat_character.dart';
+import 'package:vibration/vibration.dart';
 
 class MyGame extends FlameGame {
   // --- BLoC ---
@@ -15,9 +17,7 @@ class MyGame extends FlameGame {
 
   // --- Game world & entities ---
   final BackgroundRoom background = BackgroundRoom();
-  final CatCharacter player = CatCharacter(
-    currentAnimation: CatCharacterState.idle,
-  );
+  CatCharacter player = CatCharacter(initialAnimation: CatCharacterState.idle);
 
   // --- UI ---
   late final TextComponent coinCounter;
@@ -74,9 +74,47 @@ class MyGame extends FlameGame {
       FlameBlocListener<GameBloc, GameState>(
         listenWhen: (_, state) => state is GameSuccess,
         onNewState: (state) {
-          if (state is GameSuccess) {
-            coinCounter.text = 'Coins: ${state.gameStateModel.coins}';
+          final coins = (state as GameSuccess).gameStateModel.coins;
+          coinCounter.text = 'Coins: $coins';
+        },
+      ),
+    );
+
+    // 8) Listen for in-game effects (e.g. bonusHit, frenzy, etc.)
+    flameBlocProvider.add(
+      FlameBlocListener<GameBloc, GameState>(
+        listenWhen: (prev, curr) {
+          // only fire when effect changed and it's not "none"
+          if (prev is! GameSuccess || curr is! GameSuccess) return false;
+          final before = (prev).gameStateModel.inGameEffect;
+          final after = (curr).gameStateModel.inGameEffect;
+          return before != after && after != InGameEffect.none;
+        },
+        onNewState: (state) async {
+          final effect = (state as GameSuccess).gameStateModel.inGameEffect;
+          switch (effect) {
+            case InGameEffect.bonusHit:
+              if (await Vibration.hasVibrator()) {
+                Vibration.vibrate();
+              }
+
+              // Show the excited animation
+              player.current = CatCharacterState.excited;
+
+              // After 5s, return to idle (only if still excited)
+              Future.delayed(const Duration(seconds: 5), () {
+                if (!player.isRemoved &&
+                    player.current == CatCharacterState.excited) {
+                  player.current = CatCharacterState.idle;
+                }
+              });
+              break;
+
+            default:
+              break;
           }
+          // reset effect so it won’t retrigger next frame
+          gameBloc.add(ClearEffectEvent());
         },
       ),
     );
