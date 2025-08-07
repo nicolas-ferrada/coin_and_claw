@@ -109,7 +109,8 @@ class MyGame extends FlameGame {
               // After 5s, return to idle (only if still excited)
               Future.delayed(const Duration(seconds: 5), () {
                 if (!player.isRemoved &&
-                    player.current == CatCharacterState.excited) {
+                    player.current == CatCharacterState.excited &&
+                    player.current != CatCharacterState.surprised) {
                   player.current = CatCharacterState.idle;
                 }
               });
