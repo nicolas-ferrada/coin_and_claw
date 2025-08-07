@@ -10,50 +10,56 @@ import 'package:coin_and_claw/presentation/game/levels/background_room.dart';
 import 'package:coin_and_claw/presentation/game/characters/cat_character.dart';
 
 class MyGame extends FlameGame {
+  // --- BLoC ---
   late final GameBloc gameBloc;
-  final BackgroundRoom roomBackground = BackgroundRoom();
-  final CatCharacter catCharacter = CatCharacter(
+
+  // --- Game world & entities ---
+  final BackgroundRoom background = BackgroundRoom();
+  final CatCharacter player = CatCharacter(
     currentAnimation: CatCharacterState.idle,
   );
+
+  // --- UI ---
+  late final TextComponent coinCounter;
 
   @override
   Color backgroundColor() => const Color(0xff181425);
 
   @override
   Future<void> onLoad() async {
+    // 1) Preload all images
     await images.loadAllImages();
 
-    // Create the Bloc provider
-    final blocProvider = FlameBlocProvider<GameBloc, GameState>(
+    // 2) Create and add the FlameBlocProvider
+    final flameBlocProvider = FlameBlocProvider<GameBloc, GameState>(
       create: () {
         gameBloc = GameBloc()..add(LoadGameEvent());
         return gameBloc;
       },
     );
-    await add(blocProvider);
+    await add(flameBlocProvider);
 
-    // 2) Add the world under the provider
-    blocProvider.add(roomBackground);
+    // 3) Add the game world under the provider
+    flameBlocProvider.add(background);
 
-    // 3) Set up the camera
-    camera = CameraComponent.withFixedResolution(
+    // 4) Set up the camera for our fixed-resolution world
+    final cameraComponent = CameraComponent.withFixedResolution(
       width: 180,
       height: 320,
-      world: roomBackground,
+      world: background,
     )..viewfinder.anchor = Anchor.topLeft;
-    blocProvider.add(camera);
+    flameBlocProvider.add(cameraComponent);
 
-    // 4) Add the cat character into the world
-    await roomBackground.add(
-      catCharacter
-        ..priority = 1
-        ..anchor = Anchor.bottomCenter
-        ..position = Vector2(100, 275)
-        ..size = Vector2.all(64),
-    );
+    // 5) Add the player character into the world
+    player
+      ..priority = 1
+      ..anchor = Anchor.bottomCenter
+      ..position = Vector2(100, 275)
+      ..size = Vector2.all(64);
+    await background.add(player);
 
-    // 5) Add coin counter TextComponent under the provider
-    final coinText = TextComponent(
+    // 6) Initialize and add the coin counter UI
+    coinCounter = TextComponent(
       text: 'Coins: 0',
       position: Vector2(10, 25),
       anchor: Anchor.topLeft,
@@ -61,15 +67,15 @@ class MyGame extends FlameGame {
         style: const TextStyle(color: Colors.white, fontSize: 32),
       ),
     );
-    blocProvider.add(coinText);
+    flameBlocProvider.add(coinCounter);
 
-    // 6) Add the Bloc listener under the provider
-    blocProvider.add(
+    // 7) Listen for coin updates and refresh the UI
+    flameBlocProvider.add(
       FlameBlocListener<GameBloc, GameState>(
-        listenWhen: (_, curr) => curr is GameSuccess,
+        listenWhen: (_, state) => state is GameSuccess,
         onNewState: (state) {
           if (state is GameSuccess) {
-            coinText.text = 'Coins: ${state.gameStateModel.coins}';
+            coinCounter.text = 'Coins: ${state.gameStateModel.coins}';
           }
         },
       ),
