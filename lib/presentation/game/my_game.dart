@@ -55,10 +55,10 @@ class MyGame extends FlameGame {
     // 5) Add coin counter TextComponent under the provider
     final coinText = TextComponent(
       text: 'Coins: 0',
-      position: Vector2(10, 10),
+      position: Vector2(10, 25),
       anchor: Anchor.topLeft,
       textRenderer: TextPaint(
-        style: const TextStyle(color: Colors.white, fontSize: 16),
+        style: const TextStyle(color: Colors.white, fontSize: 32),
       ),
     );
     blocProvider.add(coinText);
