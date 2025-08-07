@@ -14,7 +14,7 @@ class CatCharacter extends SpriteAnimationGroupComponent
   late final SpriteAnimation laydownAnimation;
   late final SpriteAnimation surprisedAnimation;
 
-  final CatCharacterState currentAnimation;
+  CatCharacterState currentAnimation;
 
   CatCharacter({required this.currentAnimation});
 
