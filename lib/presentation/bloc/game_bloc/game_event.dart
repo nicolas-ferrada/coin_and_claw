@@ -26,3 +26,6 @@ class ActivateFrenzyEvent extends GameEvent {}
 
 /// Frenzy timer expired
 class FrenzyExpiredEvent extends GameEvent {}
+
+/// Clear the current in-game effect (e.g. after animation)
+class ClearEffectEvent extends GameEvent {}
