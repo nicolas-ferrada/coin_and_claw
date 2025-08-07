@@ -14,9 +14,9 @@ class CatCharacter extends SpriteAnimationGroupComponent
   late final SpriteAnimation laydownAnimation;
   late final SpriteAnimation surprisedAnimation;
 
-  CatCharacterState currentAnimation;
+  final CatCharacterState initialAnimation;
 
-  CatCharacter({required this.currentAnimation});
+  CatCharacter({required this.initialAnimation});
 
   final double stepTime = 00.10;
 
@@ -67,7 +67,7 @@ class CatCharacter extends SpriteAnimationGroupComponent
       CatCharacterState.surprised: surprisedAnimation,
     };
 
-    current = currentAnimation;
+    current = initialAnimation;
   }
 
   @override
